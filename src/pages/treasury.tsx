@@ -9,7 +9,8 @@ const DAOlordsBalance = 87500000;
 
 function Treasury() {
   const [nftList, setNftList] = useState([]);
-  const [erc20Balance, setErc20Balance] = useState<any>(); // for table array of obj
+  const [erc20Balance, setErc20Balance] = useState<any>(); // for table array of objc
+  const [ethbalance, setEthBalance] = useState<any>(); // for table array of objc
   const [lords, setLords] = useState<any>();
 
   function formatCurrency(value: number) {
@@ -32,19 +33,33 @@ function Treasury() {
     const getERC20 = async () => {
       const response = await fetch("/api/getERC20Balances");
       const data = await response.json();
-      setErc20Balance(data);
+      setEthBalance(data);
     };
-    const getTokenInfo = async (token?: any) => {
-      const response = await fetch(
-        "/api/getTokenInfo?" + new URLSearchParams(token).toString()
-      );
+
+    const coins = [
+      "0x686f2404e77ab0d9070a46cdfb0b7fecdd2318b0",
+      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "0x6b175474e89094c44da98b954eedeac495271d0f",
+      "0xdac17f958d2ee523a2206206994597c13d831ec7",
+    ];
+
+    // filter
+
+    const getERC20Balances = async () => {
+      const response = await fetch("/api/getERC20Balances");
       const data = await response.json();
-      setLords(data);
+      const filtered = data.tokens.filter((token: any) =>
+        coins.includes(token.tokenInfo.address)
+      );
+      console.log(filtered);
+      setErc20Balance(filtered);
     };
     getNftList();
     getERC20();
-    getTokenInfo({ token: "0x686f2404e77Ab0d9070a46cdfb0B7feCDD2318b0" });
+    getERC20Balances();
   }, []);
+
+  console.log(erc20Balance);
 
   return (
     <MainLayout>
@@ -79,30 +94,21 @@ function Treasury() {
               </tr>
             </thead>
             <tbody>
-              <tr className="border border-gray-300/40 ">
-                <td className="p-2">Lords</td>
-                <td className="p-2 text-right">
-                  {DAOlordsBalance.toLocaleString()}
-                </td>
-                <td className="p-2 text-right">
-                  {lords && formatCurrency(DAOlordsBalance * lords.price.rate)}
-                </td>
-              </tr>
-              {erc20Balance && (
+              {ethbalance && (
                 <tr className="border border-gray-300/40 ">
                   <td className="p-2">Ethereum</td>
                   <td className="p-2 text-right">
-                    {erc20Balance.ETH.balance.toFixed(3)}
+                    {ethbalance.ETH.balance.toFixed(3)}
                   </td>
                   <td className="p-2 text-right">
                     {formatCurrency(
-                      erc20Balance.ETH.balance * erc20Balance.ETH.price.rate
+                      ethbalance.ETH.balance * ethbalance.ETH.price.rate
                     )}
                   </td>
                 </tr>
               )}
-              {erc20Balance?.tokens &&
-                erc20Balance?.tokens.map((token: any) => (
+              {erc20Balance &&
+                erc20Balance.map((token: any) => (
                   <tr
                     key={token.tokenInfo.name}
                     className="border border-gray-300/40 "
