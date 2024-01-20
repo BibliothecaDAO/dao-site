@@ -25,7 +25,7 @@ export const MainFooter = () => {
     },
     {
       link: (
-        <a className={footerHREFStyles} href={links[0].staking}>
+        <a className={footerHREFStyles} href={"https://realms.world/staking"}>
           Staking
         </a>
       ),
@@ -58,13 +58,6 @@ export const MainFooter = () => {
       link: (
         <Link className={footerHREFStyles} href={"/articles"}>
           Articles
-        </Link>
-      ),
-    },
-    {
-      link: (
-        <Link className={footerHREFStyles} href={"/claim"}>
-          Claim
         </Link>
       ),
     },
