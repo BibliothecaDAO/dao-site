@@ -103,18 +103,6 @@ export const MainHeader = () => {
             }
           `}
           >
-            <Link className={`hover:text-gray-400`} href="/hack">
-              Hack
-            </Link>
-            <a
-              href="https://staking.bibliothecadao.xyz/"
-              className={`hover:text-gray-400`}
-            >
-              Staking
-            </a>
-            <Link href="/claim" className={`hover:text-gray-400`}>
-              Claim
-            </Link>
             <a
               href="https://github.com/BibliothecaForAdventurers/"
               target={"_blank"}
