@@ -1,26 +1,35 @@
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/interactive-supports-focus */
 import { Button } from "../components/button";
 import React, { useEffect, useState } from "react";
-
 import { MainLayout } from "../components/layout/MainLayout";
+import { TreasuryRow } from "components/TreasuryRow";
 
-const DAOlordsBalance = 87500000;
+export function formatCurrency(value: number) {
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+
+  return formatter.format(value);
+}
+
+const getERC20 = async (address: string) => {
+  const response = await fetch(`/api/getERC20Balances?address=${address}`);
+  return await response.json();
+};
 
 function Treasury() {
   const [nftList, setNftList] = useState([]);
-  const [erc20Balance, setErc20Balance] = useState<any>(); // for table array of objc
-  const [ethbalance, setEthBalance] = useState<any>(); // for table array of objc
-  const [lords, setLords] = useState<any>();
+  const [ethbalance, setEthBalance] = useState<any>();
 
-  function formatCurrency(value: number) {
-    const formatter = new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    });
+  const developmentAccount = "0xa8e6efaf015d424c626cf3c23546fcb3bd2c9f1a";
+  const frontinusHouseAccount = "0x439d859b391c38160227aeb5636df52da789cfc1";
+  const emmissionsAccount = "0xbbae2e00bcc495913546dfaf0997fb18bf0f20fe";
+  const daoRaiseAccount = "0xf92a1536fec97360f674c15e557ff60a2dbfbcdc";
 
-    return formatter.format(value);
-  }
+  const [developmentBalance, setDevelopmentBalance] = useState<any>(0);
+  const [frontinusHouseBalance, setFrontinusHouseBalance] = useState<any>(0);
+  const [emmissionsBalance, setEmmissionsBalance] = useState<any>(0);
+  const [daoRaiseBalance, setDaoRaiseBalance] = useState<any>(0);
 
   useEffect(() => {
     const getNftList = async () => {
@@ -30,12 +39,6 @@ function Treasury() {
       setNftList(data.data.realms);
     };
 
-    const getERC20 = async () => {
-      const response = await fetch("/api/getERC20Balances");
-      const data = await response.json();
-      setEthBalance(data);
-    };
-
     const coins = [
       "0x686f2404e77ab0d9070a46cdfb0b7fecdd2318b0",
       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
@@ -43,23 +46,52 @@ function Treasury() {
       "0xdac17f958d2ee523a2206206994597c13d831ec7",
     ];
 
-    // filter
-
-    const getERC20Balances = async () => {
-      const response = await fetch("/api/getERC20Balances");
-      const data = await response.json();
-      const filtered = data.tokens.filter((token: any) =>
-        coins.includes(token.tokenInfo.address)
-      );
-      console.log(filtered);
-      setErc20Balance(filtered);
-    };
     getNftList();
-    getERC20();
-    getERC20Balances();
+
+    getERC20("0xef3155450baa054ffe7950509ce2042613ee6586").then((data) => {
+      console.log(data);
+      setEthBalance(data);
+    });
+
+    getERC20(developmentAccount).then((data) => {
+      setDevelopmentBalance(
+        data.tokens.filter(
+          (token: any) => token.tokenInfo.address == coins[0]
+        )[0]
+      );
+    });
+
+    getERC20(frontinusHouseAccount).then((data) => {
+      setFrontinusHouseBalance(
+        data.tokens.filter(
+          (token: any) => token.tokenInfo.address == coins[0]
+        )[0]
+      );
+    });
+
+    getERC20(emmissionsAccount).then((data) => {
+      setEmmissionsBalance(
+        data.tokens.filter(
+          (token: any) => token.tokenInfo.address == coins[0]
+        )[0]
+      );
+    });
+
+    getERC20(daoRaiseAccount).then((data) => {
+      setDaoRaiseBalance(
+        data.tokens.filter(
+          (token: any) => token.tokenInfo.address == coins[0]
+        )[0]
+      );
+    });
   }, []);
 
-  console.log(erc20Balance);
+  console.log(
+    developmentBalance,
+    frontinusHouseBalance,
+    emmissionsBalance,
+    daoRaiseBalance
+  );
 
   return (
     <MainLayout>
@@ -80,7 +112,6 @@ function Treasury() {
             Snapshot
           </Button>
         </div>
-        {/* <FaqBlock faqs={treasuryPage} /> */}
       </div>
       <div className="border-t">
         <div className="container px-8 py-20 mx-auto">
@@ -107,27 +138,38 @@ function Treasury() {
                   </td>
                 </tr>
               )}
-              {erc20Balance &&
-                erc20Balance.map((token: any) => (
-                  <tr
-                    key={token.tokenInfo.name}
-                    className="border border-gray-300/40 "
-                  >
-                    <td className="p-2">{token.tokenInfo.name}</td>
-                    <td className="p-2 text-right">
-                      {(
-                        token.balance / Math.pow(10, token.tokenInfo.decimals)
-                      ).toFixed(3)}
-                    </td>
-                    <td className="p-2 text-right">
-                      {formatCurrency(
-                        (token.balance /
-                          Math.pow(10, token.tokenInfo.decimals)) *
-                          token.tokenInfo.price.rate
-                      )}
-                    </td>
-                  </tr>
-                ))}
+
+              {developmentBalance != 0 && (
+                <TreasuryRow
+                  balance={developmentBalance.balance}
+                  rate={developmentBalance.tokenInfo.price.rate}
+                  account_name="Development"
+                />
+              )}
+
+              {frontinusHouseBalance != 0 && (
+                <TreasuryRow
+                  balance={frontinusHouseBalance.balance}
+                  rate={frontinusHouseBalance.tokenInfo.price.rate}
+                  account_name="Frontinus House"
+                />
+              )}
+
+              {emmissionsBalance != 0 && (
+                <TreasuryRow
+                  balance={emmissionsBalance.balance}
+                  rate={emmissionsBalance.tokenInfo.price.rate}
+                  account_name="Emissions"
+                />
+              )}
+
+              {daoRaiseBalance != 0 && (
+                <TreasuryRow
+                  balance={daoRaiseBalance.balance}
+                  rate={daoRaiseBalance.tokenInfo.price.rate}
+                  account_name="DAO Raise"
+                />
+              )}
             </tbody>
           </table>
 
