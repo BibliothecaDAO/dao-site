@@ -11,27 +11,6 @@ export const MainFooter = () => {
   const daoLink: any = [
     {
       link: (
-        <a className={footerHREFStyles} href={links[0].snapshot}>
-          Snapshot
-        </a>
-      ),
-    },
-    {
-      link: (
-        <a className={footerHREFStyles} href={links[0].scroll}>
-          Litepaper
-        </a>
-      ),
-    },
-    {
-      link: (
-        <a className={footerHREFStyles} href={"https://realms.world/staking"}>
-          Staking
-        </a>
-      ),
-    },
-    {
-      link: (
         <a className={footerHREFStyles} href={"https://old.bibliothecadao.xyz"}>
           Old Bibliotheca DAO site
         </a>
@@ -39,21 +18,6 @@ export const MainFooter = () => {
     },
   ];
   const siteLinks: any = [
-    {
-      link: (
-        <a className={footerHREFStyles} href={links[0].website}>
-          Atlas
-        </a>
-      ),
-    },
-    {
-      link: (
-        <Link className={footerHREFStyles} href={links[0].treasury}>
-          Treasury
-        </Link>
-      ),
-    },
-
     {
       link: (
         <Link className={footerHREFStyles} href={"/articles"}>
